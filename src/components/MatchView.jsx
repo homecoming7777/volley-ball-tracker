@@ -6,9 +6,11 @@ export default function MatchView() {
   const { match, addPoint, rotateTeam, undoLast, endSet, finishMatch, getTeamStats, getCurrentLineup } = useMatch();
   const teamRef = useRef('A');
   
+  // ============ UI STATE ============
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [manualCode, setManualCode] = useState('');
+  const [activeView, setActiveView] = useState('match');
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
   const [timeoutTeam, setTimeoutTeam] = useState(null);
@@ -26,6 +28,7 @@ export default function MatchView() {
   const homeLineup = getCurrentLineup('home');
   const awayLineup = getCurrentLineup('away');
   
+  // ============ CALCULATIONS ============
   const totalPoints = (match?.homeScore || 0) + (match?.awayScore || 0);
   const homeWinProb = totalPoints > 0 ? ((match?.homeScore || 0) / totalPoints * 100).toFixed(1) : 50;
   const awayWinProb = totalPoints > 0 ? ((match?.awayScore || 0) / totalPoints * 100).toFixed(1) : 50;
@@ -37,6 +40,7 @@ export default function MatchView() {
     ? ((teamStats.away.kills - teamStats.away.errors) / teamStats.away.attacks * 100).toFixed(1) 
     : 0;
   
+  // ============ VOICE RECOGNITION ============
   const startListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -110,6 +114,7 @@ export default function MatchView() {
     if (recognitionRef.current) recognitionRef.current.stop();
   };
   
+  // ============ ACTIONS ============
   const handleTimeout = (team) => {
     setTimeoutTeam(team);
     setShowTimeoutDialog(true);
@@ -197,6 +202,7 @@ export default function MatchView() {
   
   if (!match) return null;
   
+  // Colors
   const colors = {
     bgDark: '#111835',
     primary: '#f8d613',
@@ -204,8 +210,17 @@ export default function MatchView() {
     light: '#fbfcfc',
   };
   
+  const tabs = [
+    { id: 'match', label: '🏐 Live Match' },
+    { id: 'stats', label: '📊 Live Stats' },
+    { id: 'rotation', label: '🔄 Rotation' },
+    { id: 'timeline', label: '⏱️ Timeline' },
+    { id: 'players', label: '👥 Players' },
+  ];
+  
   return (
     <div style={{ backgroundColor: colors.bgDark, color: colors.light }} className="min-h-screen">
+      {/* Top Navigation Bar */}
       <div style={{ backgroundColor: colors.bgDark, borderBottom: `1px solid ${colors.primary}30` }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
@@ -222,22 +237,17 @@ export default function MatchView() {
         </div>
       </div>
       
+      {/* View Tabs - FIXED: using transparent border instead of 'none' */}
       <div style={{ borderBottom: `1px solid ${colors.primary}30`, backgroundColor: colors.bgDark }}>
         <div className="max-w-7xl mx-auto flex gap-1 px-4">
-          {[
-            { id: 'match', label: '🏐 Live Match' },
-            { id: 'stats', label: '📊 Live Stats' },
-            { id: 'rotation', label: '🔄 Rotation' },
-            { id: 'timeline', label: '⏱️ Timeline' },
-            { id: 'players', label: '👥 Players' },
-          ].map(tab => (
+          {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveView(tab.id)}
               className="px-6 py-3 font-medium transition"
               style={{
-                borderBottom: activeView === tab.id ? `2px solid ${colors.primary}` : 'none',
-                color: activeView === tab.id ? colors.primary : colors.light + 'aa',
+                borderBottom: activeView === tab.id ? `2px solid ${colors.primary}` : '2px solid transparent',
+                color: activeView === tab.id ? colors.primary : `${colors.light}aa`,
               }}
             >
               {tab.label}
@@ -247,8 +257,10 @@ export default function MatchView() {
       </div>
       
       <div className="max-w-7xl mx-auto p-4">
+        {/* ============ LIVE MATCH VIEW ============ */}
         {activeView === 'match' && (
           <>
+            {/* Scoreboard */}
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-2xl p-6 mb-6 shadow-xl">
               <div className="flex justify-between items-center">
                 <div className="text-center flex-1">
@@ -302,6 +314,7 @@ export default function MatchView() {
                 </div>
               </div>
               
+              {/* Win Probability Bar */}
               <div className="mt-4">
                 <div className="flex justify-between text-xs mb-1">
                   <span>{match.homeTeam?.name}</span>
@@ -312,6 +325,7 @@ export default function MatchView() {
                 </div>
               </div>
               
+              {/* Match Info Bar */}
               <div className="flex justify-between mt-4 text-xs" style={{ color: colors.light + 'aa' }}>
                 <span>🏟️ {match.venue || 'Home'}</span>
                 <span>📋 Match Code: {match.matchCode}</span>
@@ -319,6 +333,7 @@ export default function MatchView() {
               </div>
             </div>
             
+            {/* Voice + Quick Actions */}
             <div className="grid lg:grid-cols-3 gap-4 mb-6">
               <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                 <div className="flex gap-2">
@@ -382,6 +397,7 @@ export default function MatchView() {
               </div>
             </div>
             
+            {/* Court Layout */}
             <div style={{ backgroundColor: '#0a2e0a', border: `1px solid ${colors.primary}30` }} className="rounded-2xl p-6 mb-6 shadow-xl">
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
@@ -395,24 +411,16 @@ export default function MatchView() {
                       const positionInfo = ['Front Left', 'Front Center', 'Front Right', 'Back Left', 'Back Center', 'Server'];
                       const stats = getPlayerStats(player, 'home');
                       return (
-                        <div
-                          key={idx}
-                          onClick={() => setSelectedPlayer({ team: 'home', num: player, stats })}
-                          className="rounded-lg p-3 text-center cursor-pointer hover:bg-green-800 transition group relative"
-                          style={{ backgroundColor: '#1f4a1f', color: colors.light }}
-                        >
+                        <div key={idx} onClick={() => setSelectedPlayer({ team: 'home', num: player, stats })} className="rounded-lg p-3 text-center cursor-pointer hover:bg-green-800 transition" style={{ backgroundColor: '#1f4a1f', color: colors.light }}>
                           <div className="text-xs opacity-70">{positions[idx]}</div>
                           <div className="text-xl font-bold">#{player}</div>
                           <div className="text-xs opacity-75">{positionInfo[idx]}</div>
-                          {stats && stats.kills > 0 && (
-                            <div className="text-xs mt-1">💪 {stats.kills}</div>
-                          )}
+                          {stats && stats.kills > 0 && <div className="text-xs mt-1">💪 {stats.kills}</div>}
                         </div>
                       );
                     })}
                   </div>
                 </div>
-                
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold" style={{ color: colors.secondary }}>⚪ {match.awayTeam?.name}</h3>
@@ -424,25 +432,17 @@ export default function MatchView() {
                       const positionInfo = ['Front Right', 'Front Center', 'Front Left', 'Server', 'Back Center', 'Back Left'];
                       const stats = getPlayerStats(player, 'away');
                       return (
-                        <div
-                          key={idx}
-                          onClick={() => setSelectedPlayer({ team: 'away', num: player, stats })}
-                          className="rounded-lg p-3 text-center cursor-pointer hover:bg-green-800 transition"
-                          style={{ backgroundColor: '#1f4a1f', color: colors.light }}
-                        >
+                        <div key={idx} onClick={() => setSelectedPlayer({ team: 'away', num: player, stats })} className="rounded-lg p-3 text-center cursor-pointer hover:bg-green-800 transition" style={{ backgroundColor: '#1f4a1f', color: colors.light }}>
                           <div className="text-xs opacity-70">{positions[idx]}</div>
                           <div className="text-xl font-bold">#{player}</div>
                           <div className="text-xs opacity-75">{positionInfo[idx]}</div>
-                          {stats && stats.kills > 0 && (
-                            <div className="text-xs mt-1">💪 {stats.kills}</div>
-                          )}
+                          {stats && stats.kills > 0 && <div className="text-xs mt-1">💪 {stats.kills}</div>}
                         </div>
                       );
                     })}
                   </div>
                 </div>
               </div>
-              
               <div className="text-center text-white/50 text-xs mt-4">━━━━━━━━━━━━━━━ NET ━━━━━━━━━━━━━━━</div>
             </div>
             
@@ -462,10 +462,10 @@ export default function MatchView() {
                 {match.actions?.length === 0 ? (
                   <p className="text-center py-4" style={{ color: colors.light + '80' }}>No actions yet. Start scoring!</p>
                 ) : (
-                  match.actions?.map((action, idx) => (
+                  match.actions.slice().reverse().map((action, idx) => (
                     <div key={idx} className="border-b py-2 text-sm flex justify-between items-center hover:bg-gray-800" style={{ borderColor: colors.primary + '20' }}>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs" style={{ color: colors.light + 'aa' }}>{idx + 1}</span>
+                        <span className="text-xs" style={{ color: colors.light + 'aa' }}>{match.actions.length - idx}</span>
                         {action.pointAction && <span className="w-2 h-2 bg-green-500 rounded-full"></span>}
                         {action.timeout && <span className="w-2 h-2 bg-orange-500 rounded-full"></span>}
                         {action.substitution && <span className="w-2 h-2 bg-teal-500 rounded-full"></span>}
@@ -486,6 +486,7 @@ export default function MatchView() {
           </>
         )}
         
+        {/* ============ LIVE STATS VIEW ============ */}
         {activeView === 'stats' && (
           <div className="space-y-6">
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
@@ -494,48 +495,31 @@ export default function MatchView() {
                 <div>
                   <h3 className="text-xl font-semibold mb-4" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span>Total Points</span>
-                      <span className="text-2xl font-bold">{match.homeScore}</span>
-                    </div>
+                    <div className="flex justify-between items-center"><span>Total Points</span><span className="text-2xl font-bold">{match.homeScore}</span></div>
                     <div className="flex justify-between"><span>Kills</span><span className="font-bold">{teamStats?.home?.kills || 0}</span></div>
                     <div className="flex justify-between"><span>Attack Errors</span><span className="font-bold text-red-400">{teamStats?.home?.errors || 0}</span></div>
                     <div className="flex justify-between"><span>Aces</span><span className="font-bold text-green-400">{teamStats?.home?.aces || 0}</span></div>
                     <div className="flex justify-between"><span>Blocks</span><span className="font-bold">{teamStats?.home?.blocks || 0}</span></div>
                     <div className="flex justify-between"><span>Digs</span><span className="font-bold">{teamStats?.home?.digs || 0}</span></div>
                     <div className="pt-2 border-t" style={{ borderColor: colors.primary + '30' }}>
-                      <div className="flex justify-between font-bold">
-                        <span>Attack Efficiency</span>
-                        <span className={homeAttackEff >= 30 ? 'text-green-400' : homeAttackEff >= 10 ? 'text-yellow-400' : 'text-red-400'}>
-                          {homeAttackEff}%
-                        </span>
-                      </div>
+                      <div className="flex justify-between font-bold"><span>Attack Efficiency</span><span className={homeAttackEff >= 30 ? 'text-green-400' : homeAttackEff >= 10 ? 'text-yellow-400' : 'text-red-400'}>{homeAttackEff}%</span></div>
                       <div className="w-full rounded-full h-2 mt-1" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}>
                         <div className="rounded-full h-2" style={{ width: `${Math.min(100, Math.max(0, homeAttackEff))}%`, backgroundColor: colors.secondary }}></div>
                       </div>
                     </div>
                   </div>
                 </div>
-                
                 <div>
                   <h3 className="text-xl font-semibold mb-4" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span>Total Points</span>
-                      <span className="text-2xl font-bold">{match.awayScore}</span>
-                    </div>
+                    <div className="flex justify-between items-center"><span>Total Points</span><span className="text-2xl font-bold">{match.awayScore}</span></div>
                     <div className="flex justify-between"><span>Kills</span><span className="font-bold">{teamStats?.away?.kills || 0}</span></div>
                     <div className="flex justify-between"><span>Attack Errors</span><span className="font-bold text-red-400">{teamStats?.away?.errors || 0}</span></div>
                     <div className="flex justify-between"><span>Aces</span><span className="font-bold text-green-400">{teamStats?.away?.aces || 0}</span></div>
                     <div className="flex justify-between"><span>Blocks</span><span className="font-bold">{teamStats?.away?.blocks || 0}</span></div>
                     <div className="flex justify-between"><span>Digs</span><span className="font-bold">{teamStats?.away?.digs || 0}</span></div>
                     <div className="pt-2 border-t" style={{ borderColor: colors.secondary + '30' }}>
-                      <div className="flex justify-between font-bold">
-                        <span>Attack Efficiency</span>
-                        <span className={awayAttackEff >= 30 ? 'text-green-400' : awayAttackEff >= 10 ? 'text-yellow-400' : 'text-red-400'}>
-                          {awayAttackEff}%
-                        </span>
-                      </div>
+                      <div className="flex justify-between font-bold"><span>Attack Efficiency</span><span className={awayAttackEff >= 30 ? 'text-green-400' : awayAttackEff >= 10 ? 'text-yellow-400' : 'text-red-400'}>{awayAttackEff}%</span></div>
                       <div className="w-full rounded-full h-2 mt-1" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.secondary}30` }}>
                         <div className="rounded-full h-2" style={{ width: `${Math.min(100, Math.max(0, awayAttackEff))}%`, backgroundColor: colors.secondary }}></div>
                       </div>
@@ -544,76 +528,50 @@ export default function MatchView() {
                 </div>
               </div>
             </div>
-            
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
               <h3 className="font-bold mb-4" style={{ color: colors.primary }}>📈 Momentum (Last 10 Points)</h3>
               <div className="flex gap-2 flex-wrap">
                 {(match.momentum?.last5 || []).map((point, idx) => (
-                  <div
-                    key={idx}
-                    className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                    style={{ backgroundColor: point === 'home' ? colors.secondary : point === 'away' ? colors.secondary : colors.bgDark + '80' }}
-                  >
+                  <div key={idx} className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg" style={{ backgroundColor: point === 'home' ? colors.secondary : point === 'away' ? colors.secondary : colors.bgDark + '80' }}>
                     {point === 'home' ? 'H' : 'A'}
                   </div>
                 ))}
               </div>
               <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}>
-                <div className="text-sm">
-                  {match.momentum?.streak ? (
-                    <span className="text-green-400">🔥 {match.momentum.streak.team === 'home' ? match.homeTeam?.name : match.awayTeam?.name} is on a {match.momentum.streak.count}-point streak!</span>
-                  ) : (
-                    <span style={{ color: colors.light + 'aa' }}>No active streak</span>
-                  )}
-                </div>
+                <div className="text-sm">{match.momentum?.streak ? <span className="text-green-400">🔥 {match.momentum.streak.team === 'home' ? match.homeTeam?.name : match.awayTeam?.name} is on a {match.momentum.streak.count}-point streak!</span> : <span style={{ color: colors.light + 'aa' }}>No active streak</span>}</div>
               </div>
             </div>
           </div>
         )}
         
+        {/* ============ ROTATION VIEW ============ */}
         {activeView === 'rotation' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>🔄 Rotation Analysis</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h3 className="font-semibold mb-3" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3>
-                <div className="space-y-2">
-                  {[1, 2, 3, 4, 5, 6].map(rot => {
-                    const points = match.rotationStats?.home?.[rot] || 0;
-                    return (
-                      <div key={rot} className="flex items-center gap-3">
-                        <div className="w-16 font-bold">Rotation {rot}</div>
-                        <div className="flex-1">
-                          <div className="h-8 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}>
-                            <div className="h-full rounded-full flex items-center justify-end px-2 text-white text-xs" style={{ width: `${Math.min(100, points * 10)}%`, backgroundColor: colors.secondary }}>
-                              {points > 0 && points}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {[1,2,3,4,5,6].map(rot => {
+                  const points = match.rotationStats?.home?.[rot] || 0;
+                  return (
+                    <div key={rot} className="flex items-center gap-3 mb-2">
+                      <div className="w-16 font-bold">Rotation {rot}</div>
+                      <div className="flex-1"><div className="h-8 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}><div className="h-full rounded-full flex items-center justify-end px-2 text-white text-xs" style={{ width: `${Math.min(100, points * 10)}%`, backgroundColor: colors.secondary }}>{points > 0 && points}</div></div></div>
+                    </div>
+                  );
+                })}
               </div>
               <div>
                 <h3 className="font-semibold mb-3" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3>
-                <div className="space-y-2">
-                  {[1, 2, 3, 4, 5, 6].map(rot => {
-                    const points = match.rotationStats?.away?.[rot] || 0;
-                    return (
-                      <div key={rot} className="flex items-center gap-3">
-                        <div className="w-16 font-bold">Rotation {rot}</div>
-                        <div className="flex-1">
-                          <div className="h-8 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.secondary}30` }}>
-                            <div className="h-full rounded-full flex items-center justify-end px-2 text-white text-xs" style={{ width: `${Math.min(100, points * 10)}%`, backgroundColor: colors.secondary }}>
-                              {points > 0 && points}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {[1,2,3,4,5,6].map(rot => {
+                  const points = match.rotationStats?.away?.[rot] || 0;
+                  return (
+                    <div key={rot} className="flex items-center gap-3 mb-2">
+                      <div className="w-16 font-bold">Rotation {rot}</div>
+                      <div className="flex-1"><div className="h-8 rounded-full overflow-hidden" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.secondary}30` }}><div className="h-full rounded-full flex items-center justify-end px-2 text-white text-xs" style={{ width: `${Math.min(100, points * 10)}%`, backgroundColor: colors.secondary }}>{points > 0 && points}</div></div></div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: colors.secondary + '10', border: `1px solid ${colors.primary}30` }}>
@@ -622,6 +580,7 @@ export default function MatchView() {
           </div>
         )}
         
+        {/* ============ TIMELINE VIEW ============ */}
         {activeView === 'timeline' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>⏱️ Match Timeline</h2>
@@ -630,27 +589,13 @@ export default function MatchView() {
               <div className="space-y-4">
                 {(match.actions || []).slice(0, 30).map((action, idx) => (
                   <div key={idx} className="relative flex gap-4 ml-8">
-                    <div className="absolute -left-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold z-10"
-                      style={{
-                        backgroundColor: action.pointAction ? colors.secondary : colors.bgDark + '80',
-                        color: colors.light,
-                        border: `1px solid ${colors.primary}30`
-                      }}>
+                    <div className="absolute -left-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold z-10" style={{ backgroundColor: action.pointAction ? colors.secondary : colors.bgDark + '80', color: colors.light, border: `1px solid ${colors.primary}30` }}>
                       {action.pointAction ? 'P' : action.timeout ? 'T' : action.substitution ? 'S' : action.injury ? 'I' : 'A'}
                     </div>
                     <div className="flex-1 rounded-lg p-3" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}20` }}>
                       <div className="flex justify-between items-start">
-                        <div>
-                          <span className="font-medium">{action.text}</span>
-                          <div className="text-xs mt-1" style={{ color: colors.light + 'aa' }}>
-                            Set {action.set || match.currentSet} • {action.timestamp ? new Date(action.timestamp).toLocaleTimeString() : ''}
-                          </div>
-                        </div>
-                        {action.pointAction && (
-                          <div className="text-right">
-                            <div className="text-sm font-bold">{match.homeScore}-{match.awayScore}</div>
-                          </div>
-                        )}
+                        <div><span className="font-medium">{action.text}</span><div className="text-xs mt-1" style={{ color: colors.light + 'aa' }}>Set {action.set || match.currentSet} • {action.timestamp ? new Date(action.timestamp).toLocaleTimeString() : ''}</div></div>
+                        {action.pointAction && <div className="text-right"><div className="text-sm font-bold">{match.homeScore}-{match.awayScore}</div></div>}
                       </div>
                     </div>
                   </div>
@@ -660,106 +605,24 @@ export default function MatchView() {
           </div>
         )}
         
+        {/* ============ PLAYERS VIEW ============ */}
         {activeView === 'players' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>👥 Player Statistics</h2>
             <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-semibold mb-3" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {match.homeTeam?.players?.map(player => {
-                    const stats = getPlayerStats(player.num, 'home');
-                    return (
-                      <div key={player.num} className="border rounded-lg p-3 cursor-pointer hover:bg-gray-800" style={{ borderColor: colors.primary + '30' }} onClick={() => setSelectedPlayer({ team: 'home', num: player.num, stats, name: player.name })}>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-bold text-lg">#{player.num}</span>
-                            <span className="ml-2">{player.name}</span>
-                            <span className="ml-2 text-xs" style={{ color: colors.light + 'aa' }}>{player.position}</span>
-                          </div>
-                          {stats && (
-                            <div className="text-right">
-                              <div className="text-sm">💪 {stats.kills} | ❌ {stats.errors}</div>
-                              <div className={`text-xs font-bold ${stats.efficiency >= 30 ? 'text-green-400' : stats.efficiency >= 10 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                {stats.efficiency}% Eff
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="font-semibold mb-3" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3>
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {match.awayTeam?.players?.map(player => {
-                    const stats = getPlayerStats(player.num, 'away');
-                    return (
-                      <div key={player.num} className="border rounded-lg p-3 cursor-pointer hover:bg-gray-800" style={{ borderColor: colors.secondary + '30' }} onClick={() => setSelectedPlayer({ team: 'away', num: player.num, stats, name: player.name })}>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-bold text-lg">#{player.num}</span>
-                            <span className="ml-2">{player.name}</span>
-                            <span className="ml-2 text-xs" style={{ color: colors.light + 'aa' }}>{player.position}</span>
-                          </div>
-                          {stats && (
-                            <div className="text-right">
-                              <div className="text-sm">💪 {stats.kills} | ❌ {stats.errors}</div>
-                              <div className={`text-xs font-bold ${stats.efficiency >= 30 ? 'text-green-400' : stats.efficiency >= 10 ? 'text-yellow-400' : 'text-red-400'}`}>
-                                {stats.efficiency}% Eff
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <div><h3 className="font-semibold mb-3" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3><div className="space-y-2 max-h-96 overflow-y-auto">{match.homeTeam?.players?.map(player => { const stats = getPlayerStats(player.num, 'home'); return (<div key={player.num} className="border rounded-lg p-3 cursor-pointer hover:bg-gray-800" style={{ borderColor: colors.primary + '30' }} onClick={() => setSelectedPlayer({ team: 'home', num: player.num, stats, name: player.name })}><div className="flex justify-between items-center"><div><span className="font-bold text-lg">#{player.num}</span><span className="ml-2">{player.name}</span><span className="ml-2 text-xs" style={{ color: colors.light + 'aa' }}>{player.position}</span></div>{stats && <div className="text-right"><div className="text-sm">💪 {stats.kills} | ❌ {stats.errors}</div><div className={`text-xs font-bold ${stats.efficiency >= 30 ? 'text-green-400' : stats.efficiency >= 10 ? 'text-yellow-400' : 'text-red-400'}`}>{stats.efficiency}% Eff</div></div>}</div></div>); })}</div></div>
+              <div><h3 className="font-semibold mb-3" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3><div className="space-y-2 max-h-96 overflow-y-auto">{match.awayTeam?.players?.map(player => { const stats = getPlayerStats(player.num, 'away'); return (<div key={player.num} className="border rounded-lg p-3 cursor-pointer hover:bg-gray-800" style={{ borderColor: colors.secondary + '30' }} onClick={() => setSelectedPlayer({ team: 'away', num: player.num, stats, name: player.name })}><div className="flex justify-between items-center"><div><span className="font-bold text-lg">#{player.num}</span><span className="ml-2">{player.name}</span><span className="ml-2 text-xs" style={{ color: colors.light + 'aa' }}>{player.position}</span></div>{stats && <div className="text-right"><div className="text-sm">💪 {stats.kills} | ❌ {stats.errors}</div><div className={`text-xs font-bold ${stats.efficiency >= 30 ? 'text-green-400' : stats.efficiency >= 10 ? 'text-yellow-400' : 'text-red-400'}`}>{stats.efficiency}% Eff</div></div>}</div></div>); })}</div></div>
             </div>
           </div>
         )}
       </div>
       
-      
+      {/* ============ MODALS ============ */}
       {selectedPlayer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">
-                #{selectedPlayer.num} - {selectedPlayer.name || `Player ${selectedPlayer.num}`}
-                <span className="text-sm ml-2" style={{ color: colors.light + 'aa' }}>{selectedPlayer.team === 'home' ? match.homeTeam?.name : match.awayTeam?.name}</span>
-              </h3>
-              <button onClick={() => setSelectedPlayer(null)} className="text-gray-400">✕</button>
-            </div>
-            {!selectedPlayer.stats || (selectedPlayer.stats.kills === 0 && selectedPlayer.stats.errors === 0) ? (
-              <p className="text-center py-8" style={{ color: colors.light + '80' }}>No stats recorded yet for this player</p>
-            ) : (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: colors.secondary + '20' }}>
-                    <div className="text-2xl font-bold text-green-400">{selectedPlayer.stats.kills}</div>
-                    <div className="text-xs" style={{ color: colors.light + 'aa' }}>Kills</div>
-                  </div>
-                  <div className="p-3 rounded-lg" style={{ backgroundColor: colors.secondary + '20' }}>
-                    <div className="text-2xl font-bold text-red-400">{selectedPlayer.stats.errors}</div>
-                    <div className="text-xs" style={{ color: colors.light + 'aa' }}>Errors</div>
-                  </div>
-                </div>
-                <div className="p-3 rounded-lg" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}>
-                  <div className="flex justify-between">
-                    <span>Attack Efficiency</span>
-                    <span className="font-bold">{selectedPlayer.stats.efficiency}%</span>
-                  </div>
-                  <div className="w-full rounded-full h-2 mt-1" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
-                    <div className="rounded-full h-2" style={{ width: `${Math.min(100, Math.max(0, selectedPlayer.stats.efficiency))}%`, backgroundColor: colors.primary }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <div className="flex justify-between items-center mb-4"><h3 className="text-xl font-bold">#{selectedPlayer.num} - {selectedPlayer.name || `Player ${selectedPlayer.num}`}<span className="text-sm ml-2" style={{ color: colors.light + 'aa' }}>{selectedPlayer.team === 'home' ? match.homeTeam?.name : match.awayTeam?.name}</span></h3><button onClick={() => setSelectedPlayer(null)} className="text-gray-400">✕</button></div>
+            {!selectedPlayer.stats || (selectedPlayer.stats.kills === 0 && selectedPlayer.stats.errors === 0) ? <p className="text-center py-8" style={{ color: colors.light + '80' }}>No stats recorded yet for this player</p> : <div className="space-y-4"><div className="grid grid-cols-2 gap-4 text-center"><div className="p-3 rounded-lg" style={{ backgroundColor: colors.secondary + '20' }}><div className="text-2xl font-bold text-green-400">{selectedPlayer.stats.kills}</div><div className="text-xs" style={{ color: colors.light + 'aa' }}>Kills</div></div><div className="p-3 rounded-lg" style={{ backgroundColor: colors.secondary + '20' }}><div className="text-2xl font-bold text-red-400">{selectedPlayer.stats.errors}</div><div className="text-xs" style={{ color: colors.light + 'aa' }}>Errors</div></div></div><div className="p-3 rounded-lg" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }}><div className="flex justify-between"><span>Attack Efficiency</span><span className="font-bold">{selectedPlayer.stats.efficiency}%</span></div><div className="w-full rounded-full h-2 mt-1" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}><div className="rounded-full h-2" style={{ width: `${Math.min(100, Math.max(0, selectedPlayer.stats.efficiency))}%`, backgroundColor: colors.primary }}></div></div></div></div>}
             <button onClick={() => setSelectedPlayer(null)} className="mt-6 w-full py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Close</button>
           </div>
         </div>
@@ -770,10 +633,7 @@ export default function MatchView() {
           <div className="rounded-xl p-6 max-w-sm w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>⏸ Timeout</h3>
             <p className="mb-4">{timeoutTeam === 'home' ? match.homeTeam?.name : match.awayTeam?.name} is taking a timeout</p>
-            <div className="flex gap-3">
-              <button onClick={confirmTimeout} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Confirm</button>
-              <button onClick={() => setShowTimeoutDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button>
-            </div>
+            <div className="flex gap-3"><button onClick={confirmTimeout} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Confirm</button><button onClick={() => setShowTimeoutDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button></div>
           </div>
         </div>
       )}
@@ -783,16 +643,10 @@ export default function MatchView() {
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>🔄 Substitution</h3>
             <div className="space-y-3">
-              <select value={substitutionData.team} onChange={(e) => setSubstitutionData({ ...substitutionData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}>
-                <option value="home">{match.homeTeam?.name}</option>
-                <option value="away">{match.awayTeam?.name}</option>
-              </select>
+              <select value={substitutionData.team} onChange={(e) => setSubstitutionData({ ...substitutionData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}><option value="home">{match.homeTeam?.name}</option><option value="away">{match.awayTeam?.name}</option></select>
               <input type="text" placeholder="Player Out (#)" value={substitutionData.playerOut} onChange={(e) => setSubstitutionData({ ...substitutionData, playerOut: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }} />
               <input type="text" placeholder="Player In (#)" value={substitutionData.playerIn} onChange={(e) => setSubstitutionData({ ...substitutionData, playerIn: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }} />
-              <div className="flex gap-3 mt-4">
-                <button onClick={confirmSubstitution} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Confirm</button>
-                <button onClick={() => setShowSubstitutionDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button>
-              </div>
+              <div className="flex gap-3 mt-4"><button onClick={confirmSubstitution} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Confirm</button><button onClick={() => setShowSubstitutionDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button></div>
             </div>
           </div>
         </div>
@@ -803,16 +657,10 @@ export default function MatchView() {
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>⚠️ Injury Report</h3>
             <div className="space-y-3">
-              <select value={injuryData.team} onChange={(e) => setInjuryData({ ...injuryData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}>
-                <option value="home">{match.homeTeam?.name}</option>
-                <option value="away">{match.awayTeam?.name}</option>
-              </select>
+              <select value={injuryData.team} onChange={(e) => setInjuryData({ ...injuryData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}><option value="home">{match.homeTeam?.name}</option><option value="away">{match.awayTeam?.name}</option></select>
               <input type="text" placeholder="Player Number" value={injuryData.playerNum} onChange={(e) => setInjuryData({ ...injuryData, playerNum: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }} />
               <input type="text" placeholder="Injury Description" value={injuryData.description} onChange={(e) => setInjuryData({ ...injuryData, description: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }} />
-              <div className="flex gap-3 mt-4">
-                <button onClick={confirmInjury} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Report</button>
-                <button onClick={() => setShowInjuryDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button>
-              </div>
+              <div className="flex gap-3 mt-4"><button onClick={confirmInjury} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Report</button><button onClick={() => setShowInjuryDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button></div>
             </div>
           </div>
         </div>
@@ -823,15 +671,9 @@ export default function MatchView() {
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>🎥 Video Challenge</h3>
             <div className="space-y-3">
-              <select value={challengeData.team} onChange={(e) => setChallengeData({ ...challengeData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}>
-                <option value="home">{match.homeTeam?.name}</option>
-                <option value="away">{match.awayTeam?.name}</option>
-              </select>
+              <select value={challengeData.team} onChange={(e) => setChallengeData({ ...challengeData, team: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }}><option value="home">{match.homeTeam?.name}</option><option value="away">{match.awayTeam?.name}</option></select>
               <input type="text" placeholder="Challenge Reason (touch, in/out, etc.)" value={challengeData.reason} onChange={(e) => setChallengeData({ ...challengeData, reason: e.target.value })} className="w-full p-2 rounded border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40', color: colors.light }} />
-              <div className="flex gap-3 mt-4">
-                <button onClick={confirmChallenge} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Challenge</button>
-                <button onClick={() => setShowChallengeDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button>
-              </div>
+              <div className="flex gap-3 mt-4"><button onClick={confirmChallenge} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.secondary, color: colors.light }}>Challenge</button><button onClick={() => setShowChallengeDialog(false)} className="flex-1 py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Cancel</button></div>
             </div>
           </div>
         </div>
@@ -840,40 +682,9 @@ export default function MatchView() {
       {showMatchSummary && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold" style={{ color: colors.primary }}>📊 Match Summary</h3>
-              <button onClick={() => setShowMatchSummary(false)} className="text-gray-400">✕</button>
-            </div>
-            
-            <div className="text-center mb-6">
-              <div className="text-4xl font-bold">{match.homeScore} - {match.awayScore}</div>
-              <div className="text-gray-400">{match.homeTeam?.name} vs {match.awayTeam?.name}</div>
-              <div className="text-sm" style={{ color: colors.light + 'aa' }}>Sets: {match.homeSetWins} - {match.awaySetWins}</div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="p-4 rounded-lg" style={{ backgroundColor: colors.secondary + '10', border: `1px solid ${colors.primary}30` }}>
-                <h4 className="font-bold" style={{ color: colors.primary }}>{match.homeTeam?.name}</h4>
-                <div className="mt-2 space-y-1 text-sm">
-                  <p>Points: {match.homeScore}</p>
-                  <p>Kills: {teamStats?.home?.kills || 0}</p>
-                  <p>Errors: {teamStats?.home?.errors || 0}</p>
-                  <p>Aces: {teamStats?.home?.aces || 0}</p>
-                  <p>Blocks: {teamStats?.home?.blocks || 0}</p>
-                </div>
-              </div>
-              <div className="p-4 rounded-lg" style={{ backgroundColor: colors.secondary + '10', border: `1px solid ${colors.secondary}30` }}>
-                <h4 className="font-bold" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h4>
-                <div className="mt-2 space-y-1 text-sm">
-                  <p>Points: {match.awayScore}</p>
-                  <p>Kills: {teamStats?.away?.kills || 0}</p>
-                  <p>Errors: {teamStats?.away?.errors || 0}</p>
-                  <p>Aces: {teamStats?.away?.aces || 0}</p>
-                  <p>Blocks: {teamStats?.away?.blocks || 0}</p>
-                </div>
-              </div>
-            </div>
-            
+            <div className="flex justify-between items-center mb-4"><h3 className="text-2xl font-bold" style={{ color: colors.primary }}>📊 Match Summary</h3><button onClick={() => setShowMatchSummary(false)} className="text-gray-400">✕</button></div>
+            <div className="text-center mb-6"><div className="text-4xl font-bold">{match.homeScore} - {match.awayScore}</div><div className="text-gray-400">{match.homeTeam?.name} vs {match.awayTeam?.name}</div><div className="text-sm" style={{ color: colors.light + 'aa' }}>Sets: {match.homeSetWins} - {match.awaySetWins}</div></div>
+            <div className="grid md:grid-cols-2 gap-4 mb-6"><div className="p-4 rounded-lg" style={{ backgroundColor: colors.secondary + '10', border: `1px solid ${colors.primary}30` }}><h4 className="font-bold" style={{ color: colors.primary }}>{match.homeTeam?.name}</h4><div className="mt-2 space-y-1 text-sm"><p>Points: {match.homeScore}</p><p>Kills: {teamStats?.home?.kills || 0}</p><p>Errors: {teamStats?.home?.errors || 0}</p><p>Aces: {teamStats?.home?.aces || 0}</p><p>Blocks: {teamStats?.home?.blocks || 0}</p></div></div><div className="p-4 rounded-lg" style={{ backgroundColor: colors.secondary + '10', border: `1px solid ${colors.secondary}30` }}><h4 className="font-bold" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h4><div className="mt-2 space-y-1 text-sm"><p>Points: {match.awayScore}</p><p>Kills: {teamStats?.away?.kills || 0}</p><p>Errors: {teamStats?.away?.errors || 0}</p><p>Aces: {teamStats?.away?.aces || 0}</p><p>Blocks: {teamStats?.away?.blocks || 0}</p></div></div></div>
             <button onClick={() => setShowMatchSummary(false)} className="w-full py-2 rounded" style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30`, color: colors.light }}>Close</button>
           </div>
         </div>
