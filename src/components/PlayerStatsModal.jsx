@@ -28,7 +28,6 @@ export default function PlayerStatsModal({ player, onClose }) {
           <p className="text-gray-500 text-center py-8">No stats recorded yet for this player</p>
         ) : (
           <div className="space-y-4">
-            {/* Attack */}
             {stats.attacks > 0 && (
               <div className="border-b pb-3">
                 <div className="flex justify-between font-semibold mb-2">
@@ -45,7 +44,6 @@ export default function PlayerStatsModal({ player, onClose }) {
               </div>
             )}
             
-            {/* Serve */}
             {stats.serves > 0 && (
               <div className="border-b pb-3">
                 <div className="flex justify-between font-semibold mb-2">
@@ -62,7 +60,6 @@ export default function PlayerStatsModal({ player, onClose }) {
               </div>
             )}
             
-            {/* Reception */}
             {stats.receptions > 0 && (
               <div className="border-b pb-3">
                 <div className="flex justify-between font-semibold mb-2">
@@ -78,7 +75,6 @@ export default function PlayerStatsModal({ player, onClose }) {
               </div>
             )}
             
-            {/* Defense */}
             {(stats.blocks > 0 || stats.digs > 0) && (
               <div>
                 <div className="font-semibold mb-2">🛡️ Defense</div>

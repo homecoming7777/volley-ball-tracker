@@ -22,7 +22,6 @@ export default function AnalyticsPage() {
     setHistory(matches);
   }, []);
   
-  // ============ HELPER FUNCTIONS ============
   const calculateTeamStats = (match) => {
     if (!match || !match.actions) return null;
     
@@ -349,7 +348,6 @@ export default function AnalyticsPage() {
   return (
     <div style={{ backgroundColor: colors.bgDark, color: colors.light }} className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold" style={{ color: colors.primary }}>📊 Analytics Dashboard</h1>
@@ -365,7 +363,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
         
-        {/* Tabs */}
         <div style={{ backgroundColor: colors.bgDark, borderBottom: `1px solid ${colors.primary}30` }} className="rounded-t-xl shadow-sm">
           <div className="flex gap-1 px-4">
             {[
@@ -391,10 +388,8 @@ export default function AnalyticsPage() {
         </div>
         
         <div style={{ backgroundColor: colors.bgDark + 'dd', border: `1px solid ${colors.primary}30`, borderTop: 'none' }} className="rounded-b-xl p-6">
-          {/* ============ OVERVIEW TAB ============ */}
           {activeTab === 'overview' && (
             <div>
-              {/* Stats Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
                 <div style={{ backgroundColor: colors.secondary }} className="rounded-xl p-4">
                   <div className="text-3xl font-bold">{overall.totalMatches}</div>
@@ -422,9 +417,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               
-              {/* Charts Section */}
               <div className="grid lg:grid-cols-2 gap-6 mb-8">
-                {/* Win/Loss Distribution */}
                 <div style={{ border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                   <h3 className="font-bold mb-4" style={{ color: colors.primary }}>🏆 Win/Loss Distribution</h3>
                   <div className="flex items-center gap-4">
@@ -450,7 +443,6 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
                 
-                {/* Top Performers Preview */}
                 <div style={{ border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                   <h3 className="font-bold mb-4" style={{ color: colors.primary }}>⭐ Top Performers</h3>
                   <div className="space-y-3">
@@ -471,7 +463,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               
-              {/* Kill/Error Analysis */}
               <div style={{ border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                 <h3 className="font-bold mb-4" style={{ color: colors.primary }}>📊 Kill vs Error Analysis</h3>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -508,10 +499,8 @@ export default function AnalyticsPage() {
             </div>
           )}
           
-          {/* ============ MATCH HISTORY TAB ============ */}
           {activeTab === 'matches' && (
             <div>
-              {/* Filters */}
               <div style={{ backgroundColor: colors.bgDark + '80', border: `1px solid ${colors.primary}30` }} className="rounded-lg p-4 mb-6">
                 <div className="grid md:grid-cols-4 gap-4">
                   <div>
@@ -543,7 +532,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               
-              {/* Match List */}
               <div className="space-y-4">
                 {sortedHistory.length === 0 ? (
                   <div className="text-center py-12" style={{ color: colors.light + 'aa' }}>
@@ -613,7 +601,6 @@ export default function AnalyticsPage() {
             </div>
           )}
           
-          {/* ============ PLAYER STATS TAB ============ */}
           {activeTab === 'players' && (
             <div>
               <h2 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>👥 Player Statistics</h2>
@@ -666,12 +653,10 @@ export default function AnalyticsPage() {
             </div>
           )}
           
-          {/* ============ TRENDS TAB ============ */}
           {activeTab === 'trends' && (
             <div>
               <h2 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>📈 Performance Trends</h2>
               
-              {/* Recent Match Trends */}
               <div style={{ border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4 mb-6">
                 <h3 className="font-bold mb-4">Recent Match Results</h3>
                 <div className="space-y-3">
@@ -698,7 +683,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
               
-              {/* Performance Insights */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div style={{ border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                   <h3 className="font-bold mb-3">🏆 Best Performance</h3>
@@ -733,13 +717,11 @@ export default function AnalyticsPage() {
             </div>
           )}
           
-          {/* ============ INSIGHTS TAB ============ */}
           {activeTab === 'insights' && (
             <div>
               <h2 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>💡 Smart Insights</h2>
               
               <div className="space-y-4">
-                {/* Win Rate Insight */}
                 <div style={{ backgroundColor: colors.secondary + '10', borderLeft: `4px solid ${colors.secondary}` }} className="rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">🏆</div>
@@ -757,7 +739,6 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
                 
-                {/* Scoring Insight */}
                 <div style={{ backgroundColor: colors.primary + '10', borderLeft: `4px solid ${colors.primary}` }} className="rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">📊</div>
@@ -775,7 +756,6 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
                 
-                {/* Kill/Error Insight */}
                 <div style={{ backgroundColor: colors.secondary + '10', borderLeft: `4px solid ${colors.secondary}` }} className="rounded-lg p-4">
                   <div className="flex items-start gap-3">
                     <div className="text-2xl">⚡</div>
@@ -793,7 +773,6 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
                 
-                {/* Top Performer Insight */}
                 {topPerformers.length > 0 && (
                   <div style={{ backgroundColor: colors.primary + '10', borderLeft: `4px solid ${colors.primary}` }} className="rounded-lg p-4">
                     <div className="flex items-start gap-3">
@@ -814,7 +793,6 @@ export default function AnalyticsPage() {
                   </div>
                 )}
                 
-                {/* Recommendation Insight */}
                 {overall.totalMatches > 0 && (
                   <div style={{ backgroundColor: colors.secondary + '10', borderLeft: `4px solid ${colors.secondary}` }} className="rounded-lg p-4">
                     <div className="flex items-start gap-3">

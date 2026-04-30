@@ -27,7 +27,6 @@ export default function PlayerComparison({ match, onClose }) {
         </div>
         
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Home Player */}
           <div>
             <label className="block text-sm font-medium mb-1">{match.homeTeam.name} Player #</label>
             <select value={homePlayer} onChange={(e) => setHomePlayer(e.target.value)} className="w-full p-2 border rounded mb-3">
@@ -49,7 +48,6 @@ export default function PlayerComparison({ match, onClose }) {
             )}
           </div>
           
-          {/* Away Player */}
           <div>
             <label className="block text-sm font-medium mb-1">{match.awayTeam.name} Player #</label>
             <select value={awayPlayer} onChange={(e) => setAwayPlayer(e.target.value)} className="w-full p-2 border rounded mb-3">

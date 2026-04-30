@@ -242,7 +242,6 @@ export default function MatchSetup() {
   return (
     <div style={{ backgroundColor: colors.bgDark }} className="min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-bold flex items-center gap-3" style={{ color: colors.primary }}>
@@ -266,7 +265,6 @@ export default function MatchSetup() {
           </div>
         </div>
         
-        {/* Tabs */}
         <div className="rounded-2xl shadow-xl border overflow-hidden" style={{ backgroundColor: colors.bgDark + 'dd', borderColor: colors.primary + '30' }}>
           <div className="border-b" style={{ borderColor: colors.primary + '30' }}>
             <div className="flex gap-1 px-4 overflow-x-auto">
@@ -294,9 +292,7 @@ export default function MatchSetup() {
             </div>
           </div>
         
-          {/* Tab Content */}
           <div className="p-6">
-            {/* MATCH INFO TAB */}
             {activeTab === 'match' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: colors.light }}>
@@ -360,7 +356,6 @@ export default function MatchSetup() {
               </div>
             )}
             
-            {/* TEAMS TAB */}
             {activeTab === 'teams' && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="rounded-2xl border p-6" style={{ backgroundColor: colors.bgDark + '80', borderColor: colors.primary + '30' }}>
@@ -429,7 +424,6 @@ export default function MatchSetup() {
               </div>
             )}
             
-            {/* PLAYERS TAB */}
             {activeTab === 'players' && (
               <div>
                 <div className="flex justify-between items-center mb-6">
@@ -443,7 +437,6 @@ export default function MatchSetup() {
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-8">
-                  {/* Home Players */}
                   <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: colors.bgDark + '60', borderColor: colors.primary + '30' }}>
                     <div className="p-3 border-b" style={{ borderColor: colors.primary + '30', backgroundColor: colors.bgDark + '80' }}>
                       <h3 className="font-semibold flex items-center gap-2" style={{ color: colors.primary }}>
@@ -479,7 +472,6 @@ export default function MatchSetup() {
                     </div>
                   </div>
                   
-                  {/* Away Players */}
                   <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: colors.bgDark + '60', borderColor: colors.secondary + '30' }}>
                     <div className="p-3 border-b" style={{ borderColor: colors.secondary + '30', backgroundColor: colors.bgDark + '80' }}>
                       <h3 className="font-semibold flex items-center gap-2" style={{ color: colors.secondary }}>
@@ -519,7 +511,6 @@ export default function MatchSetup() {
               </div>
             )}
             
-            {/* ROTATION TAB */}
             {activeTab === 'rotation' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: colors.light }}>
@@ -564,7 +555,6 @@ export default function MatchSetup() {
               </div>
             )}
             
-            {/* TACTICS TAB */}
             {activeTab === 'tactics' && (
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="rounded-2xl border p-6" style={{ backgroundColor: colors.bgDark + '80', borderColor: colors.primary + '30' }}>
@@ -592,7 +582,6 @@ export default function MatchSetup() {
               </div>
             )}
             
-            {/* TEMPLATES TAB */}
             {activeTab === 'templates' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2" style={{ color: colors.light }}>
@@ -625,7 +614,6 @@ export default function MatchSetup() {
           </div>
         </div>
         
-        {/* Add Player Modal */}
         {showAddPlayer && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="rounded-2xl shadow-2xl p-6 max-w-md w-full border" style={{ backgroundColor: colors.bgDark, borderColor: colors.primary + '40' }}>
@@ -645,7 +633,6 @@ export default function MatchSetup() {
           </div>
         )}
         
-        {/* Start Button */}
         <div className="mt-10 flex justify-end">
           <button onClick={handleStartMatch} className="text-white px-10 py-4 rounded-xl font-bold text-xl transition shadow-2xl flex items-center gap-3" style={{ backgroundColor: colors.secondary }}>
             🏐 Start Match

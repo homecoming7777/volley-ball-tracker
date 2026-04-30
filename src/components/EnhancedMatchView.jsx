@@ -22,7 +22,6 @@ export default function EnhancedMatchView() {
   const awayLineup = getCurrentLineup('away');
   const playerStats = getPlayerStats();
   
-  // Voice recognition
   const startListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -133,7 +132,6 @@ export default function EnhancedMatchView() {
   
   return (
     <div className="max-w-7xl mx-auto p-4">
-      {/* Alerts */}
       {match.alerts?.length > 0 && (
         <div className="mb-4 space-y-2">
           {match.alerts.map((alert, idx) => (
@@ -144,7 +142,6 @@ export default function EnhancedMatchView() {
         </div>
       )}
       
-      {/* Scoreboard */}
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-6 mb-6 shadow-xl">
         <div className="flex justify-between items-center">
           <div className="text-center flex-1">
@@ -169,7 +166,6 @@ export default function EnhancedMatchView() {
         </div>
       </div>
       
-      {/* Voice + Input Controls */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow p-4">
           <div className="flex gap-3">
@@ -196,7 +192,6 @@ export default function EnhancedMatchView() {
           </div>
         </div>
         
-        {/* Quick Stats */}
         <div className="bg-white rounded-xl shadow p-4">
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
@@ -235,10 +230,8 @@ export default function EnhancedMatchView() {
         </div>
       </div>
       
-      {/* Court Layout */}
       <div className="bg-green-800 rounded-2xl p-6 mb-6 shadow-xl">
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Home Court */}
           <div>
             <h3 className="text-white text-center font-bold mb-3">🔵 {match.homeTeam.name}</h3>
             <div className="grid grid-cols-3 gap-2">
@@ -262,7 +255,6 @@ export default function EnhancedMatchView() {
             </div>
           </div>
           
-          {/* Away Court */}
           <div>
             <h3 className="text-white text-center font-bold mb-3">⚪ {match.awayTeam.name}</h3>
             <div className="grid grid-cols-3 gap-2">
@@ -288,7 +280,6 @@ export default function EnhancedMatchView() {
         </div>
       </div>
       
-      {/* Control Buttons */}
       <div className="flex flex-wrap gap-3 mb-6 justify-center">
         <button onClick={undoLast} className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg font-medium">↩ Undo</button>
         <button onClick={() => addPoint('home')} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium">+1 Home</button>
@@ -303,7 +294,6 @@ export default function EnhancedMatchView() {
         <button onClick={finishMatch} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium">🏁 Finish Match</button>
       </div>
       
-      {/* Play-by-Play */}
       <div className="bg-white rounded-xl shadow p-4">
         <h3 className="font-bold mb-3">📋 Play-by-Play</h3>
         <div className="max-h-64 overflow-y-auto">
@@ -328,7 +318,6 @@ export default function EnhancedMatchView() {
         </div>
       </div>
       
-      {/* Modals */}
       {selectedPlayer && (
         <PlayerStatsModal player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />
       )}

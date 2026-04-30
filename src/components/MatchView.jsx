@@ -6,11 +6,9 @@ export default function MatchView() {
   const { match, addPoint, rotateTeam, undoLast, endSet, finishMatch, getTeamStats, getCurrentLineup } = useMatch();
   const teamRef = useRef('A');
   
-  // ============ UI STATE ============
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [manualCode, setManualCode] = useState('');
-  const [activeView, setActiveView] = useState('match'); // match, stats, rotation, timeline, players
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [showTimeoutDialog, setShowTimeoutDialog] = useState(false);
   const [timeoutTeam, setTimeoutTeam] = useState(null);
@@ -28,7 +26,6 @@ export default function MatchView() {
   const homeLineup = getCurrentLineup('home');
   const awayLineup = getCurrentLineup('away');
   
-  // ============ CALCULATIONS ============
   const totalPoints = (match?.homeScore || 0) + (match?.awayScore || 0);
   const homeWinProb = totalPoints > 0 ? ((match?.homeScore || 0) / totalPoints * 100).toFixed(1) : 50;
   const awayWinProb = totalPoints > 0 ? ((match?.awayScore || 0) / totalPoints * 100).toFixed(1) : 50;
@@ -40,7 +37,6 @@ export default function MatchView() {
     ? ((teamStats.away.kills - teamStats.away.errors) / teamStats.away.attacks * 100).toFixed(1) 
     : 0;
   
-  // ============ VOICE RECOGNITION ============
   const startListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -114,7 +110,6 @@ export default function MatchView() {
     if (recognitionRef.current) recognitionRef.current.stop();
   };
   
-  // ============ ACTIONS ============
   const handleTimeout = (team) => {
     setTimeoutTeam(team);
     setShowTimeoutDialog(true);
@@ -164,7 +159,6 @@ export default function MatchView() {
   };
   
   const addAction = (action) => {
-    // This would be connected to context
     console.log('Action:', action);
   };
   
@@ -203,7 +197,6 @@ export default function MatchView() {
   
   if (!match) return null;
   
-  // Colors
   const colors = {
     bgDark: '#111835',
     primary: '#f8d613',
@@ -213,7 +206,6 @@ export default function MatchView() {
   
   return (
     <div style={{ backgroundColor: colors.bgDark, color: colors.light }} className="min-h-screen">
-      {/* Top Navigation Bar */}
       <div style={{ backgroundColor: colors.bgDark, borderBottom: `1px solid ${colors.primary}30` }} className="sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center h-16">
@@ -230,7 +222,6 @@ export default function MatchView() {
         </div>
       </div>
       
-      {/* View Tabs */}
       <div style={{ borderBottom: `1px solid ${colors.primary}30`, backgroundColor: colors.bgDark }}>
         <div className="max-w-7xl mx-auto flex gap-1 px-4">
           {[
@@ -256,10 +247,8 @@ export default function MatchView() {
       </div>
       
       <div className="max-w-7xl mx-auto p-4">
-        {/* ============ LIVE MATCH VIEW ============ */}
         {activeView === 'match' && (
           <>
-            {/* Enhanced Scoreboard */}
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-2xl p-6 mb-6 shadow-xl">
               <div className="flex justify-between items-center">
                 <div className="text-center flex-1">
@@ -313,7 +302,6 @@ export default function MatchView() {
                 </div>
               </div>
               
-              {/* Win Probability Bar */}
               <div className="mt-4">
                 <div className="flex justify-between text-xs mb-1">
                   <span>{match.homeTeam?.name}</span>
@@ -324,7 +312,6 @@ export default function MatchView() {
                 </div>
               </div>
               
-              {/* Match Info Bar */}
               <div className="flex justify-between mt-4 text-xs" style={{ color: colors.light + 'aa' }}>
                 <span>🏟️ {match.venue || 'Home'}</span>
                 <span>📋 Match Code: {match.matchCode}</span>
@@ -332,9 +319,7 @@ export default function MatchView() {
               </div>
             </div>
             
-            {/* Voice + Quick Actions */}
             <div className="grid lg:grid-cols-3 gap-4 mb-6">
-              {/* Voice Control */}
               <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                 <div className="flex gap-2">
                   <button
@@ -362,7 +347,6 @@ export default function MatchView() {
                 </p>
               </div>
               
-              {/* Quick Stats Cards */}
               <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
@@ -387,7 +371,6 @@ export default function MatchView() {
                 </div>
               </div>
               
-              {/* Quick Action Buttons */}
               <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
                 <div className="flex gap-2 flex-wrap justify-center">
                   <button onClick={() => handleTimeout('home')} className="text-white px-3 py-1 rounded text-sm" style={{ backgroundColor: colors.secondary }}>⏸ TO Home</button>
@@ -399,10 +382,8 @@ export default function MatchView() {
               </div>
             </div>
             
-            {/* Court Layout */}
             <div style={{ backgroundColor: '#0a2e0a', border: `1px solid ${colors.primary}30` }} className="rounded-2xl p-6 mb-6 shadow-xl">
               <div className="grid md:grid-cols-2 gap-8">
-                {/* Home Court */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold" style={{ color: colors.primary }}>🔵 {match.homeTeam?.name}</h3>
@@ -432,7 +413,6 @@ export default function MatchView() {
                   </div>
                 </div>
                 
-                {/* Away Court */}
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold" style={{ color: colors.secondary }}>⚪ {match.awayTeam?.name}</h3>
@@ -463,11 +443,9 @@ export default function MatchView() {
                 </div>
               </div>
               
-              {/* Net Indicator */}
               <div className="text-center text-white/50 text-xs mt-4">━━━━━━━━━━━━━━━ NET ━━━━━━━━━━━━━━━</div>
             </div>
             
-            {/* Control Buttons */}
             <div className="flex flex-wrap gap-2 mb-6 justify-center">
               <button onClick={undoLast} className="text-white px-4 py-2 rounded-lg font-medium" style={{ backgroundColor: colors.primary, color: colors.bgDark }}>↩ Undo</button>
               <button onClick={() => addPoint('home')} className="text-white px-6 py-2 rounded-lg font-bold" style={{ backgroundColor: colors.secondary }}>🔵 +1 Home</button>
@@ -475,7 +453,6 @@ export default function MatchView() {
               <button onClick={endSet} className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: colors.primary, color: colors.bgDark }}>📋 End Set</button>
             </div>
             
-            {/* Play-by-Play */}
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-4">
               <div className="flex justify-between items-center mb-3">
                 <h3 className="font-bold" style={{ color: colors.primary }}>📋 Play-by-Play</h3>
@@ -509,14 +486,11 @@ export default function MatchView() {
           </>
         )}
         
-        {/* ============ LIVE STATS VIEW ============ */}
         {activeView === 'stats' && (
           <div className="space-y-6">
-            {/* Team Comparison */}
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
               <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>📊 Team Statistics</h2>
               <div className="grid md:grid-cols-2 gap-8">
-                {/* Home Stats */}
                 <div>
                   <h3 className="text-xl font-semibold mb-4" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3>
                   <div className="space-y-3">
@@ -543,7 +517,6 @@ export default function MatchView() {
                   </div>
                 </div>
                 
-                {/* Away Stats */}
                 <div>
                   <h3 className="text-xl font-semibold mb-4" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3>
                   <div className="space-y-3">
@@ -572,7 +545,6 @@ export default function MatchView() {
               </div>
             </div>
             
-            {/* Momentum Chart */}
             <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
               <h3 className="font-bold mb-4" style={{ color: colors.primary }}>📈 Momentum (Last 10 Points)</h3>
               <div className="flex gap-2 flex-wrap">
@@ -599,7 +571,6 @@ export default function MatchView() {
           </div>
         )}
         
-        {/* ============ ROTATION VIEW ============ */}
         {activeView === 'rotation' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>🔄 Rotation Analysis</h2>
@@ -651,7 +622,6 @@ export default function MatchView() {
           </div>
         )}
         
-        {/* ============ TIMELINE VIEW ============ */}
         {activeView === 'timeline' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>⏱️ Match Timeline</h2>
@@ -690,12 +660,10 @@ export default function MatchView() {
           </div>
         )}
         
-        {/* ============ PLAYERS VIEW ============ */}
         {activeView === 'players' && (
           <div style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }} className="rounded-xl p-6">
             <h2 className="text-2xl font-bold mb-4" style={{ color: colors.primary }}>👥 Player Statistics</h2>
             <div className="grid md:grid-cols-2 gap-8">
-              {/* Home Players */}
               <div>
                 <h3 className="font-semibold mb-3" style={{ color: colors.primary }}>{match.homeTeam?.name}</h3>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -724,7 +692,6 @@ export default function MatchView() {
                 </div>
               </div>
               
-              {/* Away Players */}
               <div>
                 <h3 className="font-semibold mb-3" style={{ color: colors.secondary }}>{match.awayTeam?.name}</h3>
                 <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -757,9 +724,7 @@ export default function MatchView() {
         )}
       </div>
       
-      {/* ============ MODALS ============ */}
       
-      {/* Player Stats Modal */}
       {selectedPlayer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
@@ -800,7 +765,6 @@ export default function MatchView() {
         </div>
       )}
       
-      {/* Timeout Modal */}
       {showTimeoutDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-sm w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
@@ -814,7 +778,6 @@ export default function MatchView() {
         </div>
       )}
       
-      {/* Substitution Modal */}
       {showSubstitutionDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
@@ -835,7 +798,6 @@ export default function MatchView() {
         </div>
       )}
       
-      {/* Injury Modal */}
       {showInjuryDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
@@ -856,7 +818,6 @@ export default function MatchView() {
         </div>
       )}
       
-      {/* Challenge Modal */}
       {showChallengeDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-md w-full" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>
@@ -876,7 +837,6 @@ export default function MatchView() {
         </div>
       )}
       
-      {/* Match Summary Modal */}
       {showMatchSummary && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto" style={{ backgroundColor: colors.bgDark, border: `1px solid ${colors.primary}30` }}>

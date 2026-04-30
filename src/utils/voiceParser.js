@@ -11,7 +11,6 @@ export function parseVoiceCommand(text, teamRef) {
   const words = cleaned.split(" ").filter(Boolean);
   const set = new Set(words);
 
-  /* ---------------- TEAM (ORDER-INDEPENDENT + STICKY) ---------------- */
   let team = teamRef.current || "A";
 
   if (set.has("home") || set.has("a") || set.has("team") && set.has("a")) {
@@ -24,7 +23,6 @@ export function parseVoiceCommand(text, teamRef) {
 
   teamRef.current = team;
 
-  /* ---------------- PLAYER ---------------- */
   let playerNum = null;
 
   for (const w of words) {
@@ -34,7 +32,6 @@ export function parseVoiceCommand(text, teamRef) {
     }
   }
 
-  /* ---------------- SKILL ---------------- */
   let skill = null;
 
   if (set.has("serve") || set.has("serving")) skill = "Serve";
@@ -44,7 +41,6 @@ export function parseVoiceCommand(text, teamRef) {
   if (set.has("dig")) skill = "Dig";
   if (set.has("set")) skill = "Set";
 
-  /* ---------------- POINT DETECTION (FIXED) ---------------- */
   const isPoint =
     set.has("point") ||
     set.has("score") ||
@@ -53,7 +49,6 @@ export function parseVoiceCommand(text, teamRef) {
     (set.has("rally") && set.has("over")) ||
     (set.has("end") && set.has("rally"));
 
-  /* ---------------- EVALUATION ---------------- */
   let evaluation = "=";
 
   if (isPoint) evaluation = "+";

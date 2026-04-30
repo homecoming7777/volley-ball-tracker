@@ -7,12 +7,10 @@ export default function LiveSync({ match }) {
   const [lastUpdate, setLastUpdate] = useState(null);
   
   useEffect(() => {
-    // Listen for broadcast updates
     const interval = setInterval(() => {
       const update = localStorage.getItem('vb_live_update');
       if (update && JSON.parse(update).timestamp !== lastUpdate) {
         setLastUpdate(JSON.parse(update).timestamp);
-        // Refresh UI
         window.dispatchEvent(new Event('storage'));
       }
     }, 1000);
@@ -32,7 +30,6 @@ export default function LiveSync({ match }) {
       <h2 className="text-2xl font-bold mb-4">🔄 Live Sync</h2>
       
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Connect Device */}
         <div>
           <h3 className="font-semibold mb-3">Connect New Device</h3>
           <div className="flex gap-2">
@@ -56,7 +53,6 @@ export default function LiveSync({ match }) {
           </div>
         </div>
         
-        {/* Connected Devices */}
         <div>
           <h3 className="font-semibold mb-3">Connected Devices ({connectedDevices.length})</h3>
           {connectedDevices.length === 0 ? (

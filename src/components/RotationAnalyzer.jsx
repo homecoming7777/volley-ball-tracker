@@ -4,7 +4,6 @@ export default function RotationAnalyzer({ match, onClose }) {
   const [rotationStats, setRotationStats] = useState({ home: [], away: [] });
   
   useEffect(() => {
-    // Analyze points scored per rotation
     const homeStats = {};
     const awayStats = {};
     let currentHomeRot = 1;
@@ -43,7 +42,6 @@ export default function RotationAnalyzer({ match, onClose }) {
         </div>
         
         <div className="space-y-6">
-          {/* Home Team */}
           <div>
             <h4 className="font-semibold text-blue-600 mb-3">🔵 {match.homeTeam.name}</h4>
             <div className="grid grid-cols-6 gap-2">
@@ -63,7 +61,6 @@ export default function RotationAnalyzer({ match, onClose }) {
             )}
           </div>
           
-          {/* Away Team */}
           <div>
             <h4 className="font-semibold text-red-600 mb-3">⚪ {match.awayTeam.name}</h4>
             <div className="grid grid-cols-6 gap-2">

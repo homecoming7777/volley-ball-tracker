@@ -1,4 +1,3 @@
-// App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { MatchProvider } from './context/MatchContext';
 import MatchSetup from './pages/MatchSetup';

@@ -12,7 +12,6 @@ export const TEAM_WORDS = {
   "away side": "B",
 };
 
-/* ---------------- NUMBERS ---------------- */
 export const NUMBER_WORDS = {
   one: 1,
   won: 1,
@@ -49,7 +48,6 @@ export const NUMBER_WORDS = {
   twenty: 20,
 };
 
-/* ---------------- SKILLS (MISSING BEFORE → NOW FIXED) ---------------- */
 export const SKILLS = {
   serve: "Serve",
   serving: "Serve",
@@ -70,9 +68,7 @@ export const SKILLS = {
   pipe: "Pipe",
 };
 
-/* ---------------- EVALUATIONS (MISSING BEFORE → NOW FIXED) ---------------- */
 export const EVAL = {
-  // positive
   perfect: "#",
   excellent: "#",
   ace: "+",
@@ -81,7 +77,6 @@ export const EVAL = {
   good: "+",
   great: "+",
 
-  // negative
   error: "-",
   mistake: "-",
   bad: "-",
@@ -91,7 +86,6 @@ export const EVAL = {
   negative: "-",
   fault: "-",
 
-  // neutral
   neutral: "=",
   ok: "=",
   okay: "=",

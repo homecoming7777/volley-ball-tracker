@@ -7,7 +7,6 @@ const HISTORY_KEY = 'volleyball_match_history';
 export const MatchProvider = ({ children }) => {
   const [match, setMatch] = useState(null);
 
-  // Load saved match
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -19,7 +18,6 @@ export const MatchProvider = ({ children }) => {
     }
   }, []);
 
-  // Auto-save match
   useEffect(() => {
     if (match) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(match));
@@ -74,7 +72,6 @@ export const MatchProvider = ({ children }) => {
     return newMatch;
   };
 
-  // SIMPLE FIXED VERSION - no complex dependencies
   const addPoint = (side) => {
     if (!match) return;
     
@@ -93,7 +90,6 @@ export const MatchProvider = ({ children }) => {
       const newStats = { ...prev.statistics };
       newStats[side].points = (newStats[side].points || 0) + 1;
       
-      // Update last 5 points for momentum
       const newLast5 = [side, ...(prev.momentum.last5 || [])].slice(0, 5);
       
       return {
@@ -132,7 +128,6 @@ export const MatchProvider = ({ children }) => {
       
       const newLast5 = [side, ...(prev.momentum.last5 || [])].slice(0, 5);
       
-      // Calculate win probability
       const totalPoints = newHomeScore + newAwayScore;
       const homeLead = newHomeScore - newAwayScore;
       let winProb = 50 + (homeLead * 8);
@@ -289,7 +284,6 @@ export const MatchProvider = ({ children }) => {
   };
 
   const setLiveMode = (mode) => {
-    // Just a state setter - in real app would connect to WebSocket
     console.log('Live mode:', mode);
   };
 

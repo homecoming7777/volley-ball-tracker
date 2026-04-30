@@ -3,7 +3,6 @@ export function aiVoiceCorrect(text) {
 
   let t = text.toLowerCase().trim();
 
-  // ---------- common speech errors ----------
   const fixes = [
     [/won/g, "one"],
     [/tooo?|too/g, "two"],
