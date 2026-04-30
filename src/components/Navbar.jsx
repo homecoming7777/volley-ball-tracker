@@ -105,12 +105,6 @@ export default function Navbar() {
               Analytics
             </Link>
           </div>
-          
-          {match && (
-            <div className="text-sm truncate max-w-[180px] md:max-w-none" style={{ color: '#fbfcfc' }}>
-              Live: {match.homeTeam.name} vs {match.awayTeam.name}
-            </div>
-          )}
         </div>
         
         {isMenuOpen && (
